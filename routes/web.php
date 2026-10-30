@@ -12,9 +12,16 @@ Route::get('/category/{slug}', [App\Http\Controllers\HomeController::class, 'cat
 Route::get('/product/{slug}', [\App\Http\Controllers\HomeController::class, 'show'])->name('product.show');
 
 // مسار تبديل اللغة (الذي أضفناه في الخطوة السابقة)
-Route::get('/lang/{locale}', function ($locale) {$availableLocales = ['en', 'ar', 'nl', 'tr'];
-    if (in_array($locale,$availableLocales)) {
-        Session::put('locale', $locale);
+Route::get('/lang/{locale}', function ($locale, \Illuminate\Http\Request $request) {
+    // حفظ اللغة الجديدة في الجلسة
+    session()->put('locale', $locale);
+    app()->setLocale($locale);
+
+    // إذا كان هناك رابط توجيه مخصص (مثل رابط التصنيف المترجم)، انتقل إليه
+    if ($request->has('redirect_to') && !empty($request->redirect_to)) {
+        return redirect($request->redirect_to);
     }
-    return Redirect::back();
+
+    // وإلا، قم بإعادة تحميل الصفحة الحالية (الوضع الافتراضي)
+    return back();
 })->name('lang.switch');

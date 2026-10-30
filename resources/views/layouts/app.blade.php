@@ -80,11 +80,30 @@
                 <button class="btn btn-dark btn-sm dropdown-toggle border-secondary" type="button" data-bs-toggle="dropdown">
                     <i class="fas fa-globe"></i> {{ strtoupper(app()->getLocale()) }}
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="{{ route('lang.switch', 'en') }}">English</a></li>
-                    <li><a class="dropdown-item" href="{{ route('lang.switch', 'nl') }}">Nederlands</a></li>
-                    <li><a class="dropdown-item" href="{{ route('lang.switch', 'tr') }}">Türkçe</a></li>
-                    <li><a class="dropdown-item" href="{{ route('lang.switch', 'ar') }}">العربية</a></li>
+<ul class="dropdown-menu dropdown-menu-end">
+                    @php
+                        $availableLocales = [
+                            'en' => 'English',
+                            'nl' => 'Nederlands',
+                            'tr' => 'Türkçe',
+                            'ar' => 'العربية'
+                        ];
+                    @endphp
+
+                    @foreach($availableLocales as $code => $name)
+                        <li>
+                            <!-- 
+                              نمرر رمز اللغة (locale) 
+                              وإذا كان هناك رابط مخصص لهذه اللغة ($localizedUrls) نمرره في redirect_to
+                            -->
+                            <a class="dropdown-item" href="{{ route('lang.switch', [
+                                'locale' => $code, 
+                                'redirect_to' => $localizedUrls[$code] ?? null
+                            ]) }}">
+                                {{ $name }}
+                            </a>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
         </div>
@@ -93,51 +112,59 @@
     <!-- الطبقة السفلية: شريط التصفح (الصفحات + تصنيفات الموبايل) -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom">
         <div class="container">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+<button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuOffcanvas" aria-controls="mobileMenuOffcanvas">
+    <span class="navbar-toggler-icon"></span>
+</button>
             
-            <div class="collapse navbar-collapse" id="mainNav">
-                <!-- الصفحات الرئيسية (الديناميكية) -->
-                <ul class="navbar-nav me-auto fw-semibold">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">{{ __('ui.home') }}</a></li>
-                    
-                    @foreach($pages ?? [] as $page)
-                        <li class="nav-item">
-                            <a class="nav-link" href="/page/{{ $page['slug'] ?? '' }}">{{ $page['title'] ?? '' }}</a>
-                        </li>
-                    @endforeach
-                </ul>
+<!-- القائمة الجانبية للموبايل (Offcanvas) -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenuOffcanvas" aria-labelledby="mobileMenuLabel" style="max-width: 75vw;">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold" id="mobileMenuLabel">
+            <i class="fas fa-shopping-cart text-warning me-2"></i> القائمة
+        </h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
 
-                <!-- تصنيفات الموبايل (مخفية في الديسكتوب d-lg-none) -->
-                <ul class="navbar-nav ms-auto fw-semibold d-lg-none mt-3 border-top pt-2">
-                    <li class="nav-item px-2 text-warning fw-bold mb-2">{{ __('ui.categories') }}</li>
-                    
-                    @foreach($categories ?? [] as $category)
-                        @if(isset($category['children']) && is_array($category['children']) && count($category['children']) > 0)
-                            <!-- تصنيف رئيسي له فروع -->
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="{{ route('category.show', $category['slug'] ?? '') }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{ $category['name'] ?? $category['title'] ?? '' }}
-                                </a>
-                                <ul class="dropdown-menu border-0 bg-light ms-3 shadow-sm">
-                                    <!-- رابط للذهاب للتصنيف الرئيسي مباشرة -->
-                                    <li><a class="dropdown-item py-2 fw-bold text-warning" href="{{ route('category.show', $category['slug'] ?? '') }}">الكل في {{ $category['name'] ?? $category['title'] ?? '' }}</a></li>
-                                    
-                                    @foreach($category['children'] as $child)
-                                        <li><a class="dropdown-item py-2" href="{{ route('category.show', $child['slug'] ?? '') }}">{{ $child['name'] ?? $child['title'] ?? '' }}</a></li>
-                                    @endforeach
-                                </ul>
-                            </li>
-                        @else
-                            <!-- تصنيف رئيسي بدون فروع -->
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('category.show', $category['slug'] ?? '') }}">{{ $category['name'] ?? $category['title'] ?? '' }}</a>
-                            </li>
-                        @endif
-                    @endforeach
-                </ul>
-            </div>
+        <!-- روابط الصفحات -->
+        <ul class="navbar-nav me-auto fw-semibold mb-4">
+            <li class="nav-item">
+                <a class="nav-link py-2 border-bottom" href="{{ route('home') }}">{{ __('ui.home') }}</a>
+            </li>
+            @foreach($pages ?? [] as $page)
+                <li class="nav-item">
+                    <a class="nav-link py-2 border-bottom" href="/page/{{ $page['slug'] ?? '' }}">{{ $page['title'] ?? '' }}</a>
+                </li>
+            @endforeach
+        </ul>
+
+        <!-- روابط التصنيفات -->
+        <h6 class="text-warning fw-bold mb-3 px-2">{{ __('ui.categories') }}</h6>
+        <ul class="navbar-nav ms-auto fw-semibold">
+            @foreach($categories ?? [] as $category)
+                @if(isset($category['children']) && is_array($category['children']) && count($category['children']) > 0)
+                    <li class="nav-item dropdown mb-2">
+                        <a class="nav-link dropdown-toggle bg-light rounded px-3 py-2" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ $category['name'] ?? $category['title'] ?? '' }}
+                        </a>
+                        <ul class="dropdown-menu border-0 bg-white ps-3">
+                            <li><a class="dropdown-item py-2 fw-bold text-warning" href="{{ route('category.show', $category['slug'] ?? '') }}">الكل في {{ $category['name'] ?? $category['title'] ?? '' }}</a></li>
+                            @foreach($category['children'] as $child)
+                                <li><a class="dropdown-item py-2" href="{{ route('category.show', $child['slug'] ?? '') }}">{{ $child['name'] ?? $child['title'] ?? '' }}</a></li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @else
+                    <li class="nav-item mb-2">
+                        <a class="nav-link bg-light rounded px-3 py-2" href="{{ route('category.show', $category['slug'] ?? '') }}">
+                            {{ $category['name'] ?? $category['title'] ?? '' }}
+                        </a>
+                    </li>
+                @endif
+            @endforeach
+        </ul>
+    </div>
+</div>
         </div>
     </nav>
 

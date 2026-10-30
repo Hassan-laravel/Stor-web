@@ -25,5 +25,18 @@ return [
     'contact_us_footer' => 'تواصل معنا',
     'all_rights_reserved' => 'جميع الحقوق محفوظة.',
     'all_categories' => 'كل التصنيفات',
+    'filters' => 'الفلاتر',
+    'search_by_name' => 'ابحث بالاسم',
+    'search_name_placeholder' => 'مثال: تيفال، لابتوب...',
+    'price_range' => 'نطاق السعر (€)',
+    'min' => 'الأدنى',
+    'max' => 'الأعلى',
+    'sorting_options' => 'الترتيب والفرز',
+    'top_rated' => 'الأعلى تقييماً',
+    'best_sellers' => 'الأكثر مبيعاً',
+    'clear_filters' => 'مسح الفلاتر',
+    'no_products_found' => 'لم يتم العثور على منتجات تطابق الفلاتر المحددة.',
+    'clear_and_try_again' => 'مسح الفلاتر والمحاولة مجدداً',
+    'similar_products' => 'منتجات مشابهة قد تعجبك',
     
 ];

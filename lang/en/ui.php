@@ -25,5 +25,18 @@ return [
     'contact_us_footer' => 'Contact Us',
     'all_rights_reserved' => 'All Rights Reserved.',
     'all_categories' => 'All Categories',
+    'filters' => 'Filters',
+    'search_by_name' => 'Search by Name',
+    'search_name_placeholder' => 'e.g. Tefal, Laptop...',
+    'price_range' => 'Price Range (€)',
+    'min' => 'Min',
+    'max' => 'Max',
+    'sorting_options' => 'Sorting Options',
+    'top_rated' => 'Top Rated',
+    'best_sellers' => 'Best Sellers',
+    'clear_filters' => 'Clear Filters',
+    'no_products_found' => 'No products found matching the selected filters.',
+    'clear_and_try_again' => 'Clear filters and try again',
+    'similar_products' => 'Similar Products You May Like',
     
 ];
